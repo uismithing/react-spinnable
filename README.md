@@ -8,7 +8,7 @@ Spinnable is a React component designed to add the ability to easily rotate a ta
   * No adjustments to existing HTML/CSS needed
 
 ### Learn more
-See the demo at [http://www.uismithing.com/main/spinnable](http://www.uismithing.com/main/spinnable).
+See the demo at [http://www.uismithing.com/main/wares/spinnable](http://www.uismithing.com/main/wares/spinnable).
 
 ### Repository
 [https://github.com/uismithing/react-spinnable](https://github.com/uismithing/react-spinnable)

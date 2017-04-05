@@ -6,12 +6,13 @@ import Highlight from "react-syntax-highlight";
 import Formfields from "react-form-fields";
 import Spinnable from "react-spinnable";
 //
-import {fetchSpinnableHtml} from "../actions/actions";
-import {fetchSpinnablePropsexampleJs} from "../actions/actions";
-import {fetchSpinnableMethodsexampleJs} from "../actions/actions";
-import {fetchSpinnablePropsDemoexampleJson} from "../actions/actions";
-import {fetchSpinnableCssDemoexampleCss} from "../actions/actions";
-import {fetchSpinnableDeployexampleHtml} from "../actions/actions";
+import {fetchSpinnableHtml} from "../actions/actions_spinnable-landing";
+import {fetchSpinnablePropsexampleJs} from "../actions/actions_spinnable-landing";
+import {fetchSpinnableMethodsexampleJs} from "../actions/actions_spinnable-landing";
+import {fetchSpinnablePropsDemoexampleJson} from "../actions/actions_spinnable-landing";
+import {fetchSpinnableCssDemoexampleCss} from "../actions/actions_spinnable-landing";
+import {fetchSpinnableDeployexampleHtml} from "../actions/actions_spinnable-landing";
+//
 import BackgroundCanvas from "../components/background-canvas";
 import {updateState} from "../toolbox/toolbox";
 import ReactGA from "react-ga";
@@ -25,10 +26,6 @@ class SpinnableLanding extends Component
 	constructor(props)
 	{
 	    super(props);
-	}
-	getChildContext()
-	{
-		// empty
 	}
 	getInitialState()
 	{
@@ -51,34 +48,28 @@ class SpinnableLanding extends Component
 	{
 		let scopeProxy
 			= this;
-		let setViewLoaded
-			= scopeProxy.context.setViewLoaded;
-		let setLayoutMode
-			= scopeProxy.context.setLayoutMode;
-		let updateNavigationState
-			= scopeProxy.context.updateNavigationState;
 		let navigationSection
 			= 0;
 		//
 		window.requestAnimationFrame(()=>
 		{
-			// Updating the section index this way lets the
-			// state of the nagigation cluster fully initialize
-			// before the activeKey value is updated. This is
-			// necessary for it to be possible to navigate
-			// back to the wares section from within a component
-			// landing page when the component landing page is
-			// directly accessed via the url bar in the browser.
-			updateNavigationState(navigationSection);
+			let updateNavigationState
+				= scopeProxy.props.updateNavigationstateAction;
+			let setViewLoaded
+				= scopeProxy.props.setViewLoadedAction;
+			let setLayoutMode
+				= scopeProxy.props.setLayoutModeAction;
+			//
+			let setviewTimeout =
+				setTimeout(function()
+				{
+					setViewLoaded(true);
+					setLayoutMode("full");
+					updateNavigationState(navigationSection);
+				},
+				500);
+			//
 		});
-		let setviewTimeout =
-			setTimeout(function()
-			{
-				setViewLoaded(true);
-				setLayoutMode("full");
-			},
-			500);
-		//
 		updateState(scopeProxy,
 		{
 			"Ready":false
@@ -636,27 +627,34 @@ class SpinnableLanding extends Component
 		}
 	//
 }
-function mapAxiosstateToReactprops(axiosState)
+// Map Redux state items to this.props properties
+// each time the Redux state changes. When that
+// happens, the render() function is called
+// and the DOM is updated according to any
+// changes that happened in this.props. Use this
+// to retrieve values from the Redux state and
+// place them in this.props.
+function mapReduxstateToProps(reduxState)
 {
-	// This function is only called when the axios
-	// response updates the application state. Once
-	// this function is called, the component state
-	// is updated which causes the render() function
-	// to execute.
 	return(
 	{
-		// When the application state (state.posts.all) is
-		// updated by the axios promise, the promise response
-		// is assigned the component state this.content.posts.
-		"html":axiosState.content.html,
-		"spinnablePropsexampleJs":axiosState.content.spinnablePropsexampleJs,
-		"spinnableMethodsexampleJs":axiosState.content.spinnableMethodsexampleJs,
-		"spinnablePropsDemoexampleJson":axiosState.content.spinnablePropsDemoexampleJson,
-		"spinnableCssDemoexampleCss":axiosState.content.spinnableCssDemoexampleCss,
-		"spinnableDeployexampleHtml":axiosState.content.spinnableDeployexampleHtml
+		"html":reduxState.spinnableReducer.html,
+		"spinnablePropsexampleJs":reduxState.spinnableReducer.spinnablePropsexampleJs,
+		"spinnableMethodsexampleJs":reduxState.spinnableReducer.spinnableMethodsexampleJs,
+		"spinnablePropsDemoexampleJson":reduxState.spinnableReducer.spinnablePropsDemoexampleJson,
+		"spinnableCssDemoexampleCss":reduxState.spinnableReducer.spinnableCssDemoexampleCss,
+		"spinnableDeployexampleHtml":reduxState.spinnableReducer.spinnableDeployexampleHtml,
+		"setViewLoadedAction":reduxState.mainReducer.setViewloadedAction,
+		"setLayoutModeAction":reduxState.mainReducer.setLayoutmodeAction,
+		"updateNavigationstateAction":reduxState.navigationReducer.updateNavigationstateAction
 	});
 }
-export default connect(mapAxiosstateToReactprops,
+// Map Redux action-creators to this.props properties
+// when the component is initialized. This gives access
+// to each action-creator to the component from within
+// this.props so that actions can be dispatched. Use
+// this to initially establish values in the Redux state.
+export default connect(mapReduxstateToProps,
 {
 	"fetchSpinnableHtml":fetchSpinnableHtml,
 	"fetchSpinnablePropsexampleJs":fetchSpinnablePropsexampleJs,
